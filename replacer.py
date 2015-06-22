@@ -1,13 +1,14 @@
 import os
 
-rulesFile = "rules.txt"
-startPath = "D:\\Docs\\PivotGridDataSource"
-exclude = {"PivotGridDataSource.md"}
-printrules = True
+rulesFile = "rules_cdn.txt"
+startPath = "D:\\Docs\\Docs\\Source"
+exclude = { }
 
 debug = True
-tempdir = "temp"
+debugDir = "Debug"
 
+printRules = False
+printFiles = False
 
 #************** Reading rules **************
 
@@ -27,7 +28,7 @@ for line in lines:
 nRules = len(srcRules)
 if nRules != len(tgtRules): print("Some lines have no pair. Watch out!"); exit()
 
-if printrules:
+if printRules:
     for i in range(nRules):
         print(srcRules[i])
         print(tgtRules[i])
@@ -37,33 +38,39 @@ if printrules:
 
 hash = 0
 batFileName = "!!! Compare.bat"
-batFile = open(os.path.join(tempdir, batFileName), "w")
+batFile = open(os.path.join(debugDir, batFileName), "w")
 for root, dirs, files in os.walk(startPath):
     for name in files:
         if name not in exclude:
             path = os.path.join(root, name)
             type = name.split(".")[-1]
             if type in {'desc', 'md', 'htm'}:
-                with open(path, "r") as f: source = f.read()
-                temp = source
-                for i in range(nRules): # Check each rule
-                    if temp.find(srcRules[i]) > 0:
-                        temp = temp.replace(srcRules[i], tgtRules[i])
-
-                if temp != source:
-                    target = temp
-                    hash += 1
-                    if debug:
-                        tmpSrcPath = os.path.join(tempdir, name.replace(".", "_src"+str(hash)+"."))
-                        with open(tmpSrcPath, "w") as f: f.write(source)
-
-                        tmpTgtPath = os.path.join(tempdir, name.replace(".", "_tgt"+str(hash)+"."))
-                        with open(tmpTgtPath, "w") as f: f.write(target)
-
-                        batFile.write('start "" "C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe" /s "' + tmpSrcPath + '" "' + tmpTgtPath + '"\n')
-                    else:
-                        pass
-                        #with open(path, "w") as f: f.write(target)  # !!! BEWARE ERRORS !!!!
-                print("[OK] " + name)
+                try:
+                    with open(path, "r") as f: source = f.read()
+                    temp = source
+                    for i in range(nRules): # Check each rule
+                        if temp.find(srcRules[i]) > 0:
+                            temp = temp.replace(srcRules[i], tgtRules[i])
+    
+                    if temp != source:
+                        target = temp
+                        hash += 1
+                        if debug:
+                            srcPath = name.replace(".", "_src"+str(hash)+".")
+                            tmpSrcPath = os.path.join(debugDir, srcPath)
+                            with open(tmpSrcPath, "w") as f: f.write(source)
+    
+                            tgtPath = name.replace(".", "_tgt"+str(hash)+".")
+                            tmpTgtPath = os.path.join(debugDir, tgtPath)
+                            with open(tmpTgtPath, "w") as f: f.write(target)
+    
+                            batFile.write('start "" "C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe" /s "' + srcPath + '" "' + tgtPath + '"\n')
+                        else:
+                            pass
+                            #with open(path, "w") as f: f.write(target)  # !!! BEWARE ERRORS !!!!
+                    if printFiles: print("[OK] " + name)
+                except Exception as e:
+                    print("[ERROR!!!] File: ", path)
+                    print(e)
 print("[FINISH] " + str(hash) + " files processed")
 batFile.close()
