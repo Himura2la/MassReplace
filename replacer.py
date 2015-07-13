@@ -1,14 +1,14 @@
 import os
+import sys
 
-rulesFile = "rules_cdn.txt"
+rulesFile = "Rules\\rules_cdn.txt"
 startPath = "D:\\Docs\\Docs\\Source"
+include = {'desc', 'md', 'htm'}
 exclude = { }
 
 debug = True
 debugDir = "Debug"
-
-printRules = False
-printFiles = False
+winMergePath = "C:\\Program Files (x86)\\WinMerge"
 
 #************** Reading rules **************
 
@@ -26,13 +26,27 @@ for line in lines:
             tgtRules.append(line)
         i += 1
 nRules = len(srcRules)
-if nRules != len(tgtRules): print("Some lines have no pair. Watch out!"); exit()
+if nRules != len(tgtRules): print("[ERROR!!!] Some lines have no pair. Watch out!"); exit()
 
-if printRules:
-    for i in range(nRules):
-        print(srcRules[i])
-        print(tgtRules[i])
-        print()
+print("Rules:")
+for i in range(nRules):
+    print(srcRules[i])
+    print(tgtRules[i])
+    print()
+
+#************** Counting files **************
+
+print("[INFO] Counting files...", end="", flush=True)
+totalFiles = 0
+for root, dirs, files in os.walk(startPath):
+    for name in files:
+        if name not in exclude:
+            path = os.path.join(root, name)
+            type = name.split(".")[-1]
+            if type in include: 
+                totalFiles += 1
+print("\r[OK] Total files: ", totalFiles)
+currentFile = 0
 
 #************** Let's go replacing! **************
 
@@ -44,7 +58,7 @@ for root, dirs, files in os.walk(startPath):
         if name not in exclude:
             path = os.path.join(root, name)
             type = name.split(".")[-1]
-            if type in {'desc', 'md', 'htm'}:
+            if type in include:
                 try:
                     with open(path, "r") as f: source = f.read()
                     temp = source
@@ -56,21 +70,34 @@ for root, dirs, files in os.walk(startPath):
                         target = temp
                         hash += 1
                         if debug:
-                            srcPath = name.replace(".", "_src"+str(hash)+".")
+                            srcPath = name.replace(".", "_src["+str(hash)+"].")
                             tmpSrcPath = os.path.join(debugDir, srcPath)
                             with open(tmpSrcPath, "w") as f: f.write(source)
     
-                            tgtPath = name.replace(".", "_tgt"+str(hash)+".")
+                            tgtPath = name.replace(".", "_tgt["+str(hash)+"].")
                             tmpTgtPath = os.path.join(debugDir, tgtPath)
                             with open(tmpTgtPath, "w") as f: f.write(target)
     
-                            batFile.write('start "" "C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe" /s "' + srcPath + '" "' + tgtPath + '"\n')
+                            batFile.write('start "" ' + 
+                                          os.path.join(winMergePath, "WinMergeU.exe") + 
+                                          '" /s "' + srcPath + '" "' + tgtPath + '"\n')
                         else:
                             pass
                             #with open(path, "w") as f: f.write(target)  # !!! BEWARE ERRORS !!!!
-                    if printFiles: print("[OK] " + name)
+                    currentFile += 1
+                    percentage = currentFile / totalFiles * 100
+
+                    progressString = "\r[" + str(round(percentage)) + "%] " + \
+                                     name.encode(sys.stdout.encoding, errors='replace').decode(sys.stdout.encoding)
+                    print(progressString.ljust(80 - len(progressString)), end="", flush=True)
+                    
+                    if currentFile == 1000:
+                        raise Exception("oops...")
+                    
                 except Exception as e:
-                    print("[ERROR!!!] File: ", path)
+                    print("\r[ERROR!!!] File: ", path)
+                    print("-"*79)
                     print(e)
-print("[FINISH] " + str(hash) + " files processed")
+                    print("-"*79)
+print("\r\n[FINISH] " + str(hash) + " files processed")
 batFile.close()
