@@ -1,0 +1,38 @@
+/jslib/15.1.6/
+/jslib/15.2.2/
+
+?version=15_1
+?version=15_2
+
+Content/images/doc/15_1/
+Content/images/doc/15_2/
+
+content/images/doc/15_1/
+Content/images/doc/15_2/
+
+Content/Applications/15_1/
+Content/Applications/15_2/
+
+Content/applications/15_1/
+Content/Applications/15_2/
+
+SharedStatic/DevExtreme/15_1/
+SharedStatic/DevExtreme/15_2/
+
+c:\Program Files (x86)\DevExpress 15.1\
+C:\Program Files (x86)\DevExpress 15.2\
+
+Program Files (x86)\DevExpress 15.1\
+Program Files (x86)\DevExpress 15.2\
+
+C:\Users\Public\Documents\DevExpress Demos 15.1\
+C:\Users\Public\Documents\DevExpress Demos 15.2\
+
+When upgrading from a previous major version to version 15.1.X
+When upgrading from a previous major version to version 15.2.X
+
+in DevExtreme major version 15.1: [What's New](/New/15_1/).
+in DevExtreme major version 15.2: [What's New](/New/15_2/).
+
+major version 15.1, and all the successive minor versions: [What's New in 15.1]
+major version 15.2, and all the successive minor versions: [What's New in 15.2]

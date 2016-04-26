@@ -1,12 +1,12 @@
 import os
 import sys
 
-rulesFile = "Rules\\rules_cdn.txt"
-startPath = "D:\\Docs\\Docs\\Source"
-include = {'desc', 'md', 'htm'}
+rulesFile = "Rules\\rules_major.txt"
+startPath = "D:\\Docs\\Docs\\Source\\15_2"
+include = { 'aspx', 'desc', 'md', 'htm', 'js', 'html' }
 exclude = { }
 
-debug = True
+debug = False
 debugDir = "Debug"
 winMergePath = "C:\\Program Files (x86)\\WinMerge"
 
@@ -33,6 +33,8 @@ for i in range(nRules):
     print(srcRules[i])
     print(tgtRules[i])
     print()
+
+
 
 #************** Counting files **************
 
@@ -78,12 +80,12 @@ for root, dirs, files in os.walk(startPath):
                             tmpTgtPath = os.path.join(debugDir, tgtPath)
                             with open(tmpTgtPath, "w") as f: f.write(target)
     
-                            batFile.write('start "" ' + 
+                            batFile.write('start "" "' + 
                                           os.path.join(winMergePath, "WinMergeU.exe") + 
                                           '" /s "' + srcPath + '" "' + tgtPath + '"\n')
                         else:
                             pass
-                            #with open(path, "w") as f: f.write(target)  # !!! BEWARE ERRORS !!!!
+                            with open(path, "w") as f: f.write(target)  # !!! BEWARE ERRORS !!!!
                     currentFile += 1
                     percentage = currentFile / totalFiles * 100
 
@@ -91,13 +93,12 @@ for root, dirs, files in os.walk(startPath):
                                      name.encode(sys.stdout.encoding, errors='replace').decode(sys.stdout.encoding)
                     print(progressString.ljust(80 - len(progressString)), end="", flush=True)
                     
-                    if currentFile == 1000:
-                        raise Exception("oops...")
                     
                 except Exception as e:
                     print("\r[ERROR!!!] File: ", path)
                     print("-"*79)
                     print(e)
                     print("-"*79)
-print("\r\n[FINISH] " + str(hash) + " files processed")
+finishString = "\r[FINISH] " + str(hash) + " files processed. Happy checking =)"
+print(finishString.ljust(80 - len(finishString)))
 batFile.close()
