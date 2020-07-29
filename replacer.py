@@ -98,7 +98,6 @@ for root, dirs, files in os.walk(config['target_path']):
                             test_target_path = os.path.join(config['test_target_dir'], relative_path)
                             with open(test_target_path, "w", encoding='utf-8') as f: f.write(buffer)
                         else:
-                            pass
                             with open(path, "w", encoding='utf-8') as f: f.write(buffer)  # !!! BEWARE ERRORS !!!!
                         changed_files += 1
                     current_file += 1
