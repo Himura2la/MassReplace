@@ -9,3 +9,7 @@ Gnomy
 == regex ==
 (lectus|turpis)
 **\1**
+
+== add headers ==
+(\n\n)
+\1# New paragraph\n
