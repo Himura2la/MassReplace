@@ -42,9 +42,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# VSCode
-.vscode/
-
 # Specific
 config.json
 replaced_content/
