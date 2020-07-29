@@ -5,3 +5,7 @@ stand
 == creatures ==
 Orci
 Gnomy
+
+== regex ==
+(lectus|turpis)
+**\1**

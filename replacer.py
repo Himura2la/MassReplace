@@ -11,9 +11,10 @@ config = {
     "target_path": "sample_content",
     "include_extensions": [ 'aspx', 'desc', 'md', 'htm', 'js', 'html' ],
     "exclude_file_names": [ ],
-    "test_mode": False,
     "test_target_dir": "replaced_content",
-    "comment_sign": "="
+    "comment_sign": "=",
+    "test_mode": True,
+    "regex": True
 }
 
 if os.path.isfile(config_file):
@@ -37,6 +38,8 @@ with open(config['rules_file'], "r") as f: lines = f.readlines()
 lines = list(filter(lambda line: not (config['comment_sign'] and line.startswith(config['comment_sign'])) and re.match(r'\S', line), lines))
 for i, line in enumerate(lines):
     line = line.strip('\r').strip('\n')
+    if config['regex']:
+        line = line.replace('\\\\', '\\')
     if i % 2 == 0:
         source_rules.append(line)
     else:
@@ -77,9 +80,10 @@ for root, dirs, files in os.walk(config['target_path']):
                     with open(path, "r") as f: source = f.read()
                     buffer = source
                     for i in range(rules_count):
-                        if buffer.find(source_rules[i]) > 0:
+                        if config['regex']:
+                            buffer = re.sub(source_rules[i], target_rules[i], buffer)
+                        else:
                             buffer = buffer.replace(source_rules[i], target_rules[i])
-
                     if buffer != source:
                         if config['test_mode']:
                             relative_path = path.replace(config['target_path'], '').strip(os.sep)
@@ -91,11 +95,9 @@ for root, dirs, files in os.walk(config['target_path']):
                         changed_files += 1
                     current_file += 1
                     percentage = current_file / total_files * 100
-
                     progress_string = "\r[" + str(round(percentage)) + "%] " + \
                                      name.encode(sys.stdout.encoding, errors='replace').decode(sys.stdout.encoding)
                     print(progress_string.ljust(80 - len(progress_string)), end="", flush=True)
-
                 except Exception as e:
                     print("\r[ERROR!!!] File:", path)
                     print("-"*79)
