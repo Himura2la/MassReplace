@@ -14,3 +14,8 @@ Read the [replacer.py](replacer.py) file
 
 * Do not run this script with `test_mode == false` on directories outside the VCS.
 * In `test_mode`, you can use the GNU diff tool to view changes between `target_path` and `test_target_dir`.
+
+
+# See Also
+
+[MassReplace.ps1](https://gist.github.com/Himura2la/c76e7f4add7280aaa4bfd60fa4472782)
